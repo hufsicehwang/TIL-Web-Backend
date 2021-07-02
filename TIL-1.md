@@ -41,6 +41,7 @@ class User(models.Model):
 - 클래스안에 클래스를 만듬으로써 db의 태이블 이름을 지정 할 수 있다.
 - python manage.py makemigrations
 - python manage.py migrate
+- 모델이 바뀌면 위의 두단계를 다시 실행 해야함!!
 
 # 간단 명령어
 1. 서버 시작
