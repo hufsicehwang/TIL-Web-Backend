@@ -52,3 +52,4 @@ class User(models.Model):
  ```  
   Ctrl+c -> runserver 끝내기
  ```
+    
