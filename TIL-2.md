@@ -38,4 +38,4 @@ def login(request):
 - 페이지 변경 흐름에 따라 만들기, import 주의
 - project에서 한번 지정해주고 app에서 한번 지정해 주는것이 url 경로가 된다.
 - 위의 경우 `http://127.0.0.1:8000/user/login`
-
+    
