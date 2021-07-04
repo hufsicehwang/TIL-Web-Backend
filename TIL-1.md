@@ -33,7 +33,7 @@ virualenv (가상환경 이름)
 ```
 3. __가상환경 실행__
 ```
-__(가상환경이름)/Scripts/activate__
+(가상환경이름)/Scripts/activate
 ```
 4. 장고 설치
 ```
