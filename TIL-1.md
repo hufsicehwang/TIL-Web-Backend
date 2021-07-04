@@ -12,20 +12,44 @@
 ex) {% csrf_token %} : form 형식 안에 필수적으로 포함해야하는 토큰
 ```
 
-# django MTV 설정하기
-1. 프로젝트 생성하기
-``` 
-django-admin startproject 프로젝트이름
+# 간단 명령어
+1. 서버 시작
+ ```
+ py manage.py runserver
+ ```
+2. 서버 끝내기
+ ```  
+  Ctrl+c -> runserver 끝내기
+ ```
+ 
+# django 설치 부터 실행까지 명령어
+1. 가상환경 설치
 ```
-    
-2. 앱 생성하기
-``` 
-django-admin startproject 앱이름
+ pip3 install virtualenv
 ```
-    
-3. 앱안에 templates 생성하기
+2. 가상환경 설정
+```
+virualenv (가상환경 이름)
+```
+3. __가상환경 실행__
+```
+__(가상환경이름)/Scripts/activate__
+```
+4. 장고 설치
+```
+pip3 install django
+```
+5. 프로젝트 만들기
+```
+django-admin startproject (프로젝트명)
+```
+6. 앱 만들기
+```
+django-admin startapp (앱이름)
+```
+7. 앱안에 templates 생성하기
 
-4. 프로젝트(최하단 폴더)에 settings 파일에서 `INSTALLED_APPS`에 앱 이름 추가하기
+9. 프로젝트(최하단 폴더)에 settings 파일에서 `INSTALLED_APPS`에 앱 이름 추가하기
     - 기본 app은 MV를 가지지만 T는 가지지 않음으로 따로 templates 폴더를 만들어 준다.
 
 # Model 만들기
@@ -42,14 +66,3 @@ class User(models.Model):
 - python manage.py makemigrations
 - python manage.py migrate
 - 모델이 바뀌면 위의 두단계를 다시 실행 해야함!!
-
-# 간단 명령어
-1. 서버 시작
- ```
- py manage.py runserver
- ```
-2. 서버 끝내기
- ```  
-  Ctrl+c -> runserver 끝내기
- ```
-    
