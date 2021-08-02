@@ -52,17 +52,3 @@ django-admin startapp (앱이름)
 9. 프로젝트(최하단 폴더)에 settings 파일에서 `INSTALLED_APPS`에 앱 이름 추가하기
     - 기본 app은 MV를 가지지만 T는 가지지 않음으로 따로 templates 폴더를 만들어 준다.
 
-# Model 만들기
-```python
-class User(models.Model):
-    username = models.CharField(max_length=64, verbose_name="사용자명")
-    password = models.CharField(max_length=64, verbose_name="비밀번호")
-    registerd_date = models.DateTimeField(auto_now_add=True,verbose_name='등록시간')
-
-    class Meta:
-        db_table = 'hasik_user'
-```
-- 클래스안에 클래스를 만듬으로써 db의 태이블 이름을 지정 할 수 있다.
-- python manage.py makemigrations
-- python manage.py migrate
-- 모델이 바뀌면 위의 두단계를 다시 실행 해야함!!
