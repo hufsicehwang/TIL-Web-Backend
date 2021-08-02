@@ -44,7 +44,7 @@ admin.site.register(User, UserAdmin)
 
         return render(request, 'home.html')    
 ```
-
+     
 # 로그인 구현
 - views.py 에서
 ```py
