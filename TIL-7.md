@@ -1,4 +1,15 @@
-🐲TIL-3🐲
+🐲TIL-7🐲
+
+# form 태그안에 토큰
+- django에서는 크로스 도메인을 막기 위해서 form태그 바로 하단에 토큰을 지정해야한다.
+```html
+<form id="login" action="" method="POST">
+    {% csrf_token %}
+    <!-- 크로스 도메인을 막기 위해 사용하느 코드 -->
+    <input type="email" id="email" name="email" placeholder="Email">
+    <input type="password" id="password" name="password" placeholder="password">
+</form>
+```
 
 # template 상속
 1. base가 되는 html 상단에 `{% load static %}` 추가
@@ -6,73 +17,35 @@
 3. settings의 templates에서  `'DIRS': [os.path.join(BASE_DIR,'프로젝트이름/templates')]` 설정하기
 4. 상속받은 html에서, `{%extends 'base.html'%}` , `{% block content%}` , `{% endblock%}` 설정하기
 
-# 회원가입 구현 방법
-1. model 작성 (TIL-2 참고)
-2. admin.py 에서 
+# template 변수
+- view에서 html파일을 반환해주면서 딕션어리 변수를 같이 반환 해주면 변수를 사용할 수 있다.
+
+### view
 ```py
-class UserAdmin(admin.ModelAdmin):
-    list_display =('username','password','registerd_date','email')
-
-admin.site.register(User, UserAdmin)
+res_data = {}
+res_data['username'] = "황한식"
+return render(request, 'html파일', res_data)
 ```
-: db에서 보여지는 순서 나열
 
-3. __html의 form 태그에서 id와 name을 똑같이 설정하기!!!!__
+### html
 ```html
-<input type="email" id="email" name="email" placeholder="Email" autocomplete="off">
-<input type="text" id="username"  name="username" placeholder="이름" autocomplete="off">
-<input type="password" id="password"  name="password" placeholder="비밀번호" autocomplete="off">
-<input type="password" id="re-password" name="re-password" placeholder="비밀번호 확인" autocomplete="off">
+<div> {{username}}</div>
 ```
-: id와 name을 똑같이 설정 하지 않으면 not null 에러 발생!!
+- html 파일에서 `황한식`이 정상적으로 보여진다.
 
-4. view.py에서
-```py
-    if request.method =='GET':
-        return render(request,'home.html')
-    elif request.method == 'POST':
-        email = request.POST.get('email',None)
-        username = request.POST.get('username',None)
-        password = request.POST.get('password',None)
-        re_password = request.POST.get('re-password',None)
+# template 조건문, 반복문
+- django의 html 파일에서 조건문과 반복문을 사용할 수 있다.
 
-        if password != re_password:
-            return HttpResponse('비밀번호가 다릅니다!')
-
-        user = User(email=email,username=username,password=password)
-        user.save()
-
-        return render(request, 'home.html')    
+```html
+<div class="list-wapper">
+    {% if ... %}
+        # if 조건문 처리
+        {% for ... in ... %}
+            # for 반복문 처리
+        {% endfor%}
+    {% else %}
+        # else 조건문 처리
+    {%endif%}
+</div>       
 ```
-     
-# 로그인 구현
-- views.py 에서
-```py
-def login(request):
-    if request.method =='GET':
-        return render(request, 'login.html')
-    elif request.method =='POST':
-        email = request.POST.get('email',None)
-        password = request.POST.get('password',None)
-        res_data ={}   # 딕션어리 = key, value 값을 가지는 변수
-        if not(email and password):
-            res_data['error'] = '모든 값을 입력하세요.'
-        elif not(email):
-            res_data['error'] = '이메일을 입력하세요.'
-        elif not(password):
-            res_data['error'] = '비밀번호를 입력하세요.'
-        else:
-            try:
-                user = User.objects.get(email=email) # 필드명 = 값 이면 user 객체 생성
-            except User.DoesNotExist:
-                res_data['error'] = '존재하지 않는 아이디 입니다.'    # 아이디가 없는 예외 처리
-                return render(request,'login.html',res_data)
-
-            user_password = user.password
-            if user_password == password:
-                request.session['user'] = user.id  # session 변수에 저장
-                return redirect('/main')
-            else:
-                res_data['error'] = '비밀번호가 틀렸습니다.'
-        return render(request,'login.html',res_data) 
-```
+- if 조건문과 for 반복문이 끝나면 항상 `{%endif%}` , `{% endfor%}` 나타내야 한다.
