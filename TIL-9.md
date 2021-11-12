@@ -35,3 +35,4 @@ def classList_s(request):
 - `class_list = models.Enrol.objects.all()`  => queryset을 내가 원하는 변수로 지정
 - 'paginator = Paginator(class_list,10,orphans=5)' => list를 페이지 형태로 보여 줄때 page 당 보여줄 데이터 갯수 지정
 - 함수 기반 listview의 장점 => post 처리를 내가 알던 대로 할 수 있다. (클래스 기반은 어떻게 하는지 모르겠음,,)
+    
