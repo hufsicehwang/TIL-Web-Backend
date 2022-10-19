@@ -1,10 +1,24 @@
-## 🐳 django의 transaction
-- Django에서 한 개이상의 쿼리를 트랜잭션으로 handling하는 방법은 크게 두 가지이다.
-  - ATOMIC_REQUESTS 를 이용하여 request단위로 transaction을 묶는 방법
-  - django.db.transaction 을 사용하여 명시적으로 transaction을 핸들링 하는 방법.
+## 🦢 Transaction 특징
 
+- 원자성(Atomicity)
+    
+    > 트랜잭션이 DB에 모두 반영되거나, 혹은 전혀 반영되지 않아야 된다.
+    > 
+- 일관성(Consistency)
+    
+    > 트랜잭션의 작업 처리 결과는 항상 일관성 있어야 한다.
+    > 
+- 독립성(Isolation)
+    
+    > 둘 이상의 트랜잭션이 동시에 병행 실행되고 있을 때, 어떤 트랜잭션도 다른 트랜잭션 연산에 끼어들 수 없다.
+    > 
+- 지속성(Durability)
+    
+    > 트랜잭션이 성공적으로 완료되었으면, 결과는 영구적으로 반영되어야 한다.
+    > 
 
-## 🐱 django autocommit
+## 🐱 Django의 transaction
+
 : Transaction의 결과는 commit(transaction을 DB에 반영)하거나 rollback(D 반영 취소) 해야 한다.
 
 사용자가 commit과 rollback 구간을 수동적으로 관리하게 된다면 상당히 번거롭기 때문에 장고에서는 `Auto Commit` 기능을 제공한다.
@@ -12,7 +26,7 @@
 > 장고는 `Auto Commit`을 기본값으로 제공하고 있습니다. 즉,  insert, update와 같은 문장을 바로 DB에 commit을 진행한다.
 > 
 
-## 🐲 transaction 관리
+## 🐲 Transaction 관리
 
 - transaction은 간 DB와 connection를 지속적으로 확인하며 유지해야 한다.
 - transaction 자체를 활성, 비활성 구분 해야 한다.
@@ -20,13 +34,6 @@
 - transaction은 save point를 지정하고 관리 할 수 있어야 한다.
 
 ⇒ 이것들을 다 고려하며 transaction를 관리하기에는 코드가 복잡해지고 관리가 힘들기 때문에 명시적으로 관리하기 위해 우리는 `transaction.atomic()`를 이용 할 수 있다.
-
-## 🐣 transaction.atomic()
-
-- `atomic()`는 블록이 정상적으로 종료되었는지 아니면 예외적으로 종료되었는지 확인하여 commit, rollback 결정
-- `atomic()` 자체가 해당 구간 안에서 비정상 종료되면 rollback 해준다 ⇒ try-except 역할
-- `atomic()` 시작과 함께 새로운 transaction이 활성화 되며 save point를 저장
-- `atomic(using=)` 옵션과 내부에 objects`using`의 DB를 맞춰 주면 rollback 가능
 
 ## 🦓 수동 Rollback 함수
 
@@ -40,11 +47,23 @@
 2. `savepoint()` - 수동 관리
 3. `savepoint_commit(sid)` - savepoint 별로 수동 commit
 
+## 🐣 transaction.atomic()
+
+- `atomic()`는 블록이 정상적으로 종료되었는지 아니면 예외적으로 종료되었는지 확인하여 commit, rollback 결정한다.
+- `atomic()` 자체가 해당 구간 안에서 비정상 종료되면 rollback 해준다 ⇒ try-except 역할
+- `atomic()` 시작과 함께 새로운 transaction이 활성화 되며 save point를 저장한다.
+- `atomic(using=)` 옵션과 내부에 objects`using`의 DB를 맞춰 주면 rollback 가능
+- try-except을 사용하지 않고 atomic() 구간을 중첩해도 최상단 atomic까지 rollback 한다.
+
 ### WHY? ⇒ atomic 구간 내부에서 왜 try-except을 사용하지 않아야 할까?
+
+- [https://docs.djangoproject.com/en/4.1/topics/db/transactions/](https://docs.djangoproject.com/en/4.1/topics/db/transactions/)
 
 : django 공식 reference에도 나와 있듯이 `atomic`  구간 내부에서는 try-except를 지양 해야 한다. 
 
 이유는 except 구문에서 예외를 숨길 수 있고 이로인해 예기치 않은 동작이 발생 할 수 있다.
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/535af82e-7cc9-4a4f-86f4-52a4d91a5fc0/Untitled.png)
 
 ### WHY ⇒ 예외를 숨기지 않고 잘 처리 한다면 문제가 안되지 않을까?
 
@@ -54,5 +73,6 @@
 
 1. transaction.atomic 마다 savepoint를 작성해 try-except 구문에서 수동으로 해당 지점까지 savepoint_rollback(sid)
 
-- 함수 간 save point를 다 전달해 줘야함
-1. 가장 하위 atomic 구문을 제거하여 가장 상단 atomic 까지 자동 rollback
+- 함수 간 save point를 전달해 줘야함
+1. 가장 하위 atomic 구문과 try=except을 제거하여 가장 상단 atomic 까지 자동 rollback
+    - error 위치에 대한 디버깅 문제
