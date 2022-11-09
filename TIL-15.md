@@ -37,7 +37,10 @@
 
 ## 🦓 수동 Rollback 함수
 
-1. `set_rollback(True)`  : 가장 안쪽 atomic block을 종료할 때 atomic 하나 만 rollback
+1. `set_rollback(rollback, using)`  : 수동 rollback
+    - `rollback=True` ⇒ 가장 안쪽 atomic를 rollback
+    - `rollback=False` ⇒ transaction 전체를 rollback
+    - `using=`  ⇒ `atomic(using=)`과 DB를 맞춰 줘야함
 2. `transaction.rollback()` : transaction 전체를 rollback
 3. `transaction.savepoint_rollback(sid)` : 특정 sid(save point) 까지 rollback 
 
@@ -69,10 +72,7 @@
 
 :  예외를 잘 처리하여 rollback을 수행 한다고 해도 rollback 작업을 수행하기 전 이전 값을 읽어 들일 수 있다.
 
-## 🦄 현재 코드에서 해결 할 수 있는 방법
+## Extra
+1. debug log 양식 예시 : request.data['debug_log'] = 'In function : create_collections / Operlation : create CollectionChild’ 
+2. update와 delete 연산 시 transaction.atomic(using=DB_ZZ_W)와 내부 using(DB_ZZ_W)
 
-1. transaction.atomic 마다 savepoint를 작성해 try-except 구문에서 수동으로 해당 지점까지 savepoint_rollback(sid)
-
-- 함수 간 save point를 전달해 줘야함
-1. 가장 하위 atomic 구문과 try=except을 제거하여 가장 상단 atomic 까지 자동 rollback
-    - error 위치에 대한 디버깅 문제
